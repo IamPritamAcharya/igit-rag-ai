@@ -18,15 +18,17 @@ public class RAGService {
         List<DocumentChunk> chunks = searchService.search(question);
 
         StringBuilder context = new StringBuilder();
+
         for (DocumentChunk chunk : chunks) {
+            context.append("----\n");
             context.append(chunk.getContent()).append("\n");
         }
 
         String prompt = """
                 You are an assistant for INDIRA GANDHI INSTITUTE OF TECHNOLOGY, sarang, odisha.
 
-                Answer the question ONLY using the context below.
-                If the answer is not in the context, say "I don't know".
+                Use the context below to answer the question.
+                If partial information is available, try to answer as best as possible.
 
                 Context:
                 %s

@@ -13,11 +13,13 @@ public class IngestionController {
     private final IngestionService ingestionService;
 
     @PostMapping
-    public Document ingest(
+    public String ingest(
             @RequestParam String url,
             @RequestParam String title,
-            @RequestParam String category
-    ) {
-        return ingestionService.ingestFromUrl(url, title, category);
+            @RequestParam String category) {
+
+        ingestionService.ingestAsync(url, title, category);
+
+        return "Ingestion started in background";
     }
 }

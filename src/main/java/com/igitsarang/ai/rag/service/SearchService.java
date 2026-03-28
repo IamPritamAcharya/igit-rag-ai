@@ -16,16 +16,25 @@ public class SearchService {
 
     public List<DocumentChunk> search(String query) {
 
-        float[] embedding = embeddingService.generateEmbedding(query);
+        String enhancedQuery = query + " IGIT notice event date";
+
+        float[] embedding = embeddingService.generateEmbedding(enhancedQuery);
+
         String vectorString = toVectorString(embedding);
+        String keyword = extractKeyword(query);
 
-        List<Object[]> results = repository.findTopKSimilarRaw(vectorString, 5);
+        List<Object[]> results = repository.findTopKSimilarRaw(
+                vectorString,
+                10,
+                keyword);
 
-        return results.stream().map(row -> DocumentChunk.builder()
+        List<DocumentChunk> chunks = results.stream().map(row -> DocumentChunk.builder()
                 .id(((Number) row[0]).longValue())
                 .documentId(((Number) row[1]).longValue())
                 .content((String) row[2])
                 .build()).toList();
+
+        return chunks;
     }
 
     private String toVectorString(float[] embedding) {
@@ -37,5 +46,17 @@ public class SearchService {
         }
         sb.append("]");
         return sb.toString();
+    }
+
+    private String extractKeyword(String query) {
+        String[] words = query.toLowerCase().split(" ");
+
+        for (String word : words) {
+            if (word.length() > 4) {
+                return word;
+            }
+        }
+
+        return words[0];
     }
 }

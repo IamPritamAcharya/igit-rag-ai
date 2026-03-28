@@ -14,10 +14,12 @@ public interface DocumentChunkRepository extends JpaRepository<DocumentChunk, Lo
     @Query(value = """
                 SELECT id, document_id, content
                 FROM document_chunks
+                WHERE content ILIKE CONCAT('%', :keyword, '%')
                 ORDER BY embedding <-> CAST(:embedding AS vector)
                 LIMIT :limit
             """, nativeQuery = true)
     List<Object[]> findTopKSimilarRaw(
             @Param("embedding") String embedding,
-            @Param("limit") int limit);
+            @Param("limit") int limit,
+            @Param("keyword") String keyword);
 }
