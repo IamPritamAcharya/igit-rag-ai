@@ -43,4 +43,20 @@ public class DocumentService {
         return repository.findAll();
     }
 
+    public Document createDocument(String title, String content, String url, String category) {
+
+        Document doc = Document.builder()
+                .title(title)
+                .content(content)
+                .sourceUrl(url)
+                .category(category)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        Document saved = repository.save(doc);
+
+        chunkingService.chunkAndSave(saved);
+
+        return saved;
+    }
 }
